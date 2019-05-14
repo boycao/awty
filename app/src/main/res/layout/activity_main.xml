@@ -8,50 +8,54 @@
         tools:context=".MainActivity">
 
     <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="416dp"
-            android:layout_height="357dp" tools:layout_editor_absoluteY="51dp" tools:layout_editor_absoluteX="0dp">
+            android:layout_width="395dp"
+            android:layout_height="361dp"
+            tools:context=".MainActivity"
+            android:layout_margin="10dp" android:orientation="vertical">
         <TextView
                 android:text="Enter the text message"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textViewContent" tools:layout_editor_absoluteY="141dp"
+                android:layout_height="wrap_content" android:id="@+id/textViewContent"
+                tools:layout_editor_absoluteY="141dp"
                 tools:layout_editor_absoluteX="132dp"/>
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:text="Text Content..."
+                android:hint="Text Content..."
                 android:ems="10"
                 android:id="@+id/editTextContent"/>
         <TextView
                 android:text="Enter the recipient number"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textViewNumber" tools:layout_editor_absoluteY="178dp"
+                android:layout_height="wrap_content" android:id="@+id/textViewNumber"
+                tools:layout_editor_absoluteY="178dp"
                 tools:layout_editor_absoluteX="132dp"/>
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone"
-                android:text="Phone Number..."
+                android:hint="Phone Number..."
                 android:ems="10"
                 android:id="@+id/editTextPhoneNumber"/>
         <TextView
                 android:text="Enter the send time interval"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/textViewTime" tools:layout_editor_absoluteY="319dp"
+                android:layout_height="wrap_content" android:id="@+id/textViewTime"
+                tools:layout_editor_absoluteY="319dp"
                 tools:layout_editor_absoluteX="132dp"/>
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:text="Time Interval..."
+                android:hint="Time Interval..."
                 android:ems="10"
                 android:id="@+id/editTextTimeInterval"/>
+        <Button
+                android:text="Start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/button" tools:layout_editor_absoluteY="547dp"
+                tools:layout_editor_absoluteX="143dp"/>
     </LinearLayout>
-    <Button
-            android:text="Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/button" tools:layout_editor_absoluteY="460dp"
-            tools:layout_editor_absoluteX="147dp"/>
 
 </android.support.constraint.ConstraintLayout>
