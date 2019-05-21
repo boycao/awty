@@ -1,6 +1,7 @@
 package edu.washington.bycao96.arewethereyet
 
 import android.Manifest
+import android.app.PendingIntent
 import android.content.Context
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         private var intervalValid : Boolean = false
         private var number : String = ""
         private var interval : String = ""
-        private var timer : Timer = Timer("toast", true)
+        private var timer : Timer? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -94,42 +95,45 @@ class MainActivity : AppCompatActivity() {
             msg = contentEditText.text.toString()
             number = numberEditText.text.toString()
             interval =timeEditText.text.toString()
-            val smsManager = SmsManager.getDefault()
+
 
             val btnText = button.text.toString()
-            if(btnText == "Start"){
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                    // Need to request SEND_SMS permission
-                    ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.SEND_SMS),
-                        REQUEST_SMS_SEND_PERMISSION)
-                }else{
-                    button.setText("Stop")
-                    timer.scheduleAtFixedRate(timerTask(this, msg,number), 0, interval.toLong() * 60 * 1000)
-                }
-
-
-
+            if(btnText == "Start")
+            {   button.setText("Stop")
+                timer?.scheduleAtFixedRate(timerTask( msg,number), 0, interval.toLong() * 60 * 1000)
+                Toast.makeText(this,"SMS sent to $number: $msg",Toast.LENGTH_LONG).show()
             } else {
-                timer.cancel()
+                timer?.cancel()
                 button.setText("Start")
                 Toast.makeText(this,"The program is terminated",Toast.LENGTH_LONG).show()
             }
 
         }
     }
-    inner class timerTask(context: Context, message : String, phonenumber : String): TimerTask() {
-        private val msgcontext = context
+    inner class timerTask(message : String, phonenumber : String): TimerTask() {
         private val msg = message
         private val phonenumber = phonenumber
+        val smsManager = SmsManager.getDefault()
         override fun run() {
-            runOnUiThread(Runnable {
-                val toast = Toast.makeText(msgcontext, "SMS to $phonenumber : $msg", Toast.LENGTH_LONG).show()
-            })
+                if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this@MainActivity,
+                        arrayOf(Manifest.permission.SEND_SMS),
+                        0)
+
+                } else {
+                    smsManager.sendTextMessage(
+                        phonenumber,
+                        null,
+                        msg,
+                        null,
+                        null
+                    )
+                }
+            }
+
+
         }
 
     }
 
-}
