@@ -1,8 +1,13 @@
 package edu.washington.bycao96.arewethereyet
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.telephony.SmsManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
@@ -14,10 +19,14 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        val REQUEST_SMS_SEND_PERMISSION = 1234
+    }
+
         private var msg : String = ""
-        private var contentError : Boolean = false
-        private var numberError : Boolean = false
-        private var intervalError : Boolean = false
+        private var contentValid : Boolean = false
+        private var numberValid : Boolean = false
+        private var intervalValid : Boolean = false
         private var number : String = ""
         private var interval : String = ""
         private var timer : Timer = Timer("toast", true)
@@ -32,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         val numberEditText = findViewById<EditText>(R.id.editTextPhoneNumber)
         val timeEditText = findViewById<EditText>(R.id.editTextTimeInterval)
         val button = findViewById<Button>(R.id.button)
+        button.isEnabled = false
 
         // Setup the changelistener for contentEdittext, if the content is edited, check its validation
         contentEditText.addTextChangedListener(object : TextWatcher{
@@ -43,8 +53,8 @@ class MainActivity : AppCompatActivity() {
                 if(s.isNullOrEmpty()){
                     Toast.makeText(this@MainActivity,"Text content can not be empty!",Toast.LENGTH_LONG).show()
                 }else{
-                    contentError = true
-                    button.isEnabled=contentError && numberError && intervalError
+                    contentValid = true
+                    button.isEnabled=contentValid && numberValid && intervalValid
                 }
             }
         })
@@ -57,8 +67,8 @@ class MainActivity : AppCompatActivity() {
                 if(s.isNullOrEmpty()){
                     Toast.makeText(this@MainActivity,"Number can not be empty",Toast.LENGTH_LONG).show()
                 }else{
-                    numberError = true
-                    button.isEnabled=contentError && numberError && intervalError
+                    numberValid = true
+                    button.isEnabled=contentValid && numberValid && intervalValid
                 }
             }
         })
@@ -71,8 +81,8 @@ class MainActivity : AppCompatActivity() {
                 if(s.isNullOrEmpty()){
                     Toast.makeText(this@MainActivity,"Time interval needs to be valid",Toast.LENGTH_LONG).show()
                 }else{
-                    intervalError = true
-                    button.isEnabled=contentError && numberError && intervalError
+                    intervalValid = true
+                    button.isEnabled=contentValid && numberValid && intervalValid
                 }
             }
         })
@@ -84,11 +94,23 @@ class MainActivity : AppCompatActivity() {
             msg = contentEditText.text.toString()
             number = numberEditText.text.toString()
             interval =timeEditText.text.toString()
+            val smsManager = SmsManager.getDefault()
 
             val btnText = button.text.toString()
             if(btnText == "Start"){
-                button.setText("Stop")
-                timer.scheduleAtFixedRate(timerTask(this, msg,number), 0, interval.toLong() * 60 * 1000)
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                    // Need to request SEND_SMS permission
+                    ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.SEND_SMS),
+                        REQUEST_SMS_SEND_PERMISSION)
+                }else{
+                    button.setText("Stop")
+                    timer.scheduleAtFixedRate(timerTask(this, msg,number), 0, interval.toLong() * 60 * 1000)
+                }
+
+
 
             } else {
                 timer.cancel()
@@ -99,12 +121,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
     inner class timerTask(context: Context, message : String, phonenumber : String): TimerTask() {
-        private val Context = context
-        private val message = msg
-        private val phonenumber = number
+        private val msgcontext = context
+        private val msg = message
+        private val phonenumber = phonenumber
         override fun run() {
             runOnUiThread(Runnable {
-                val toast = Toast.makeText(Context, "$phonenumber$message", Toast.LENGTH_LONG).show()
+                val toast = Toast.makeText(msgcontext, "SMS to $phonenumber : $msg", Toast.LENGTH_LONG).show()
             })
         }
 
