@@ -117,9 +117,11 @@ class MainActivity : AppCompatActivity() {
         override fun run() {
                 if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.SEND_SMS)
                     != PackageManager.PERMISSION_GRANTED) {
+
+                    // Need to request SEND_SMS permission
                     ActivityCompat.requestPermissions(this@MainActivity,
                         arrayOf(Manifest.permission.SEND_SMS),
-                        0)
+                        REQUEST_SMS_SEND_PERMISSION)
 
                 } else {
                     smsManager.sendTextMessage(
